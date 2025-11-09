@@ -24,17 +24,17 @@ public class HUD
     }
 
     public void Draw(SpriteBatch spriteBatch, TimeManager timeManager, Inventory inventory, 
-        GraphicsDevice graphicsDevice, int screenWidth, int screenHeight)
+        Player player, GraphicsDevice graphicsDevice, int screenWidth, int screenHeight)
     {
         // Draw time panel
-        DrawTimePanel(spriteBatch, timeManager, 10, 10);
+        DrawTimePanel(spriteBatch, timeManager, player, 10, 10);
 
         // Draw inventory hotbar
         DrawInventoryHotbar(spriteBatch, inventory, graphicsDevice, 
             screenWidth / 2 - 250, screenHeight - 60);
     }
 
-    private void DrawTimePanel(SpriteBatch spriteBatch, TimeManager timeManager, int x, int y)
+    private void DrawTimePanel(SpriteBatch spriteBatch, TimeManager timeManager, Player player, int x, int y)
     {
         spriteBatch.Draw(_panelTexture, new Vector2(x, y), Color.White);
 
@@ -44,8 +44,8 @@ public class HUD
         spriteBatch.DrawString(_font, timeText, new Vector2(x + 20, y + 20), Color.White);
         spriteBatch.DrawString(_font, dateText, new Vector2(x + 20, y + 50), Color.LightGreen);
         
-        // Draw energy/health bars (placeholder)
-        DrawBar(spriteBatch, x + 20, y + 90, 260, 15, Color.Yellow, 1.0f, "Energy");
+        // Draw energy bar (actual player energy)
+        DrawBar(spriteBatch, x + 20, y + 90, 260, 15, Color.Yellow, player.GetEnergyPercentage(), "Energy");
         DrawBar(spriteBatch, x + 20, y + 115, 260, 15, Color.Red, 1.0f, "Health");
     }
 

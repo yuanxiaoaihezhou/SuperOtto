@@ -94,17 +94,17 @@ dotnet run
 
 #### Windows (AMD64)
 ```bash
-dotnet publish --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=true --output ./publish/win-x64
+dotnet publish --configuration Release --runtime win-x64 --self-contained true --output ./publish/win-x64
 ```
 
 #### Linux (AMD64)
 ```bash
-dotnet publish --configuration Release --runtime linux-x64 --self-contained true -p:PublishSingleFile=true --output ./publish/linux-x64
+dotnet publish --configuration Release --runtime linux-x64 --self-contained true --output ./publish/linux-x64
 ```
 
 #### macOS (ARM64)
 ```bash
-dotnet publish --configuration Release --runtime osx-arm64 --self-contained true -p:PublishSingleFile=true --output ./publish/osx-arm64
+dotnet publish --configuration Release --runtime osx-arm64 --self-contained true --output ./publish/osx-arm64
 ```
 
 ## 📦 下载预编译版本 | Download Pre-built Releases

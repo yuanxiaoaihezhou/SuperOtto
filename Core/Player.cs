@@ -12,12 +12,19 @@ public class Player
     public Vector2 Position { get; set; }
     public Vector2 Velocity { get; private set; }
     
+    // Energy system
+    public float MaxEnergy { get; private set; } = 100f;
+    public float CurrentEnergy { get; private set; }
+    
     private const float MoveSpeed = 150f;
     private const float Size = 32f;
+    private const float MovementEnergyCost = 2f; // Energy per second while moving
+    private const float EnergyRecoveryRate = 1f; // Energy per second while idle
 
     public Player(Vector2 startPosition)
     {
         Position = startPosition;
+        CurrentEnergy = MaxEnergy; // Start with full energy
     }
 
     public void Update(GameTime gameTime)
@@ -34,15 +41,23 @@ public class Player
         if (keyState.IsKeyDown(Keys.D) || keyState.IsKeyDown(Keys.Right))
             movement.X += 1;
 
+        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
         if (movement != Vector2.Zero)
         {
             movement.Normalize();
             Velocity = movement * MoveSpeed;
-            Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += Velocity * deltaTime;
+            
+            // Consume energy while moving
+            ConsumeEnergy(MovementEnergyCost * deltaTime);
         }
         else
         {
             Velocity = Vector2.Zero;
+            
+            // Recover energy while idle
+            RecoverEnergy(EnergyRecoveryRate * deltaTime);
         }
     }
 
@@ -77,5 +92,42 @@ public class Player
         }
         
         return tilePos;
+    }
+
+    /// <summary>
+    /// Consumes energy for an action. Returns true if energy was available.
+    /// </summary>
+    public bool ConsumeEnergy(float amount)
+    {
+        if (CurrentEnergy >= amount)
+        {
+            CurrentEnergy = Math.Max(0, CurrentEnergy - amount);
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Recovers energy up to the maximum.
+    /// </summary>
+    public void RecoverEnergy(float amount)
+    {
+        CurrentEnergy = Math.Min(MaxEnergy, CurrentEnergy + amount);
+    }
+
+    /// <summary>
+    /// Gets the energy as a percentage (0.0 to 1.0).
+    /// </summary>
+    public float GetEnergyPercentage()
+    {
+        return CurrentEnergy / MaxEnergy;
+    }
+
+    /// <summary>
+    /// Checks if the player has enough energy for an action.
+    /// </summary>
+    public bool HasEnergy(float amount)
+    {
+        return CurrentEnergy >= amount;
     }
 }
