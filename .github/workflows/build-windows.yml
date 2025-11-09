@@ -1,0 +1,48 @@
+name: Build Windows Release
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+      
+    - name: Publish Windows AMD64
+      run: dotnet publish --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true --output ./publish/win-x64
+      
+    - name: Upload Windows Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SuperOtto-Windows-AMD64
+        path: ./publish/win-x64/SuperOtto.exe
+        if-no-files-found: error
+        
+    - name: Create Release Archive
+      run: |
+        Compress-Archive -Path ./publish/win-x64/* -DestinationPath SuperOtto-Windows-AMD64.zip
+        
+    - name: Upload Release Archive
+      uses: actions/upload-artifact@v4
+      with:
+        name: SuperOtto-Windows-AMD64-Archive
+        path: SuperOtto-Windows-AMD64.zip
+        if-no-files-found: error
