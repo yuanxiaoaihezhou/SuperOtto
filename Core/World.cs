@@ -93,7 +93,7 @@ public class World
 
     public bool CanWater(int x, int y)
     {
-        if (x < 0 || x >= Width || y >= 0 && y < Height)
+        if (x >= 0 && x < Width && y >= 0 && y < Height)
             return _tiles[x, y] == TileType.TilledSoil;
         return false;
     }
