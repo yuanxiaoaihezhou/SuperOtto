@@ -149,25 +149,37 @@ public class Game1 : Game
         {
             if (selectedItem != null)
             {
+                const float toolEnergyCost = 5f; // Energy cost for tool usage
+                
                 switch (selectedItem.Name)
                 {
                     case "Hoe":
-                        _world.TillSoil(tilePos.X, tilePos.Y);
+                        if (_player.ConsumeEnergy(toolEnergyCost))
+                        {
+                            _world.TillSoil(tilePos.X, tilePos.Y);
+                        }
                         break;
                     
                     case "Watering Can":
-                        _world.WaterSoil(tilePos.X, tilePos.Y);
+                        if (_player.ConsumeEnergy(toolEnergyCost))
+                        {
+                            _world.WaterSoil(tilePos.X, tilePos.Y);
+                        }
                         break;
                     
                     case "Wheat Seeds":
-                        if (_world.CanPlant(tilePos.X, tilePos.Y) && _inventory.RemoveItem("Wheat Seeds", 1))
+                        if (_player.ConsumeEnergy(toolEnergyCost) && 
+                            _world.CanPlant(tilePos.X, tilePos.Y) && 
+                            _inventory.RemoveItem("Wheat Seeds", 1))
                         {
                             _world.PlantCrop(tilePos.X, tilePos.Y, CropType.Wheat);
                         }
                         break;
                     
                     case "Corn Seeds":
-                        if (_world.CanPlant(tilePos.X, tilePos.Y) && _inventory.RemoveItem("Corn Seeds", 1))
+                        if (_player.ConsumeEnergy(toolEnergyCost) && 
+                            _world.CanPlant(tilePos.X, tilePos.Y) && 
+                            _inventory.RemoveItem("Corn Seeds", 1))
                         {
                             _world.PlantCrop(tilePos.X, tilePos.Y, CropType.Corn);
                         }
@@ -179,11 +191,16 @@ public class Game1 : Game
         // E key to harvest
         if (keyState.IsKeyDown(Keys.E) && !_previousKeyState.IsKeyDown(Keys.E))
         {
-            var cropType = _world.HarvestCrop(tilePos.X, tilePos.Y);
-            if (cropType.HasValue)
+            const float harvestEnergyCost = 3f; // Energy cost for harvesting
+            
+            if (_player.ConsumeEnergy(harvestEnergyCost))
             {
-                string cropName = cropType.Value.ToString();
-                _inventory.AddItem(new Item(cropName, ItemType.Crop, 1));
+                var cropType = _world.HarvestCrop(tilePos.X, tilePos.Y);
+                if (cropType.HasValue)
+                {
+                    string cropName = cropType.Value.ToString();
+                    _inventory.AddItem(new Item(cropName, ItemType.Crop, 1));
+                }
             }
         }
     }
@@ -202,7 +219,7 @@ public class Game1 : Game
         _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
         if (_font != null)
         {
-            _hud.Draw(_spriteBatch, _timeManager, _inventory, GraphicsDevice, 
+            _hud.Draw(_spriteBatch, _timeManager, _inventory, _player, GraphicsDevice, 
                 _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
         }
         else
